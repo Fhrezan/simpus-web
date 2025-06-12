@@ -362,44 +362,6 @@
           return;
         }
           
-    // Konfigurasi Firebase
-        const firebaseConfig = {
-          apiKey: "AIzaSyC3CzIeL1P2fLMaVRF8fXxH4lTWqXAHVJ8",
-          authDomain: "mkpfiks.firebaseapp.com",
-          projectId: "mkpfiks",
-          storageBucket: "mkpfiks.firebasestorage.app",
-          messagingSenderId: "337193895182",
-          appId: "1:337193895182:web:b41c5b50cbd8ba8e2b835f"
-        };
-
-    // Inisialisasi Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-    // Form submit
-        const form = document.getElementById("form-pendaftaran");
-        const result = document.getElementById("result");
-
-        form.addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          const data = {
-            name: document.getElementById("nama").value.trim(),
-            dob: document.getElementById("dob").value,
-            gender: document.getElementById("gender").value,
-            visitType: document.getElementById("kunjungan").value,
-            lastVisit: new Date().toISOString().split("T")[0]
-              };
-
-          try {
-            await db.collection("patients").add(data);
-            result.textContent = "✅ Data pasien berhasil disimpan ke Firebase.";
-            result.style.color = "green";
-            form.reset();
-          } catch (error) {
-            console.error("❌ Error saat menyimpan:", error);
-            result.textContent = "Gagal menyimpan data ke Firebase.";
-            result.style.color = "red";
-          }
         // Create new patient with a generated id
         const newId = "P" + String(patients.length + 1).padStart(3, "0");
         patients.push({
