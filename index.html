@@ -2,50 +2,38 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIMPUS - Sistem Informasi Manajemen Puskesmas Rawat Inap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMPUS - Firebase GitHub Pages</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Firebase SDK (versi UMD, bukan module) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
-
   <header>
-    <div class="logo" aria-label="Logo SIMPUS">
-      <span class="material-icons" aria-hidden="true">local_hospital</span> PusCARE
-    </div>
-
-    <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar-menu" tabindex="0">
-      <span class="material-icons">menu</span>
-    </button>
-
-    <select id="role-select" aria-label="Pilih peran pengguna">
-      <option value="admin">Admin</option>
-      <option value="dokter">Dokter</option>
-      <option value="perawat">Perawat</option>
-      <option value="apoteker">Apoteker</option>
-      <option value="simpus">Tim SIMPUS</option>
-    </select>
+    <h1>SIMPUS - Firebase</h1>
   </header>
 
-  <div class="app-container">
-    <nav class="sidebar" id="sidebar-menu" aria-label="Navigasi utama aplikasi">
-      <div class="menu-header">Menu Utama</div>
-      <ul>
-        <li data-menu="pendaftaran"><span class="material-icons">person_add</span>Pendaftaran</li>
-        <li data-menu="pasien"><span class="material-icons">people</span>Data Pasien</li>
-        <li data-menu="rekam-medis"><span class="material-icons">folder_shared</span>Rekam Medis</li>
-        <li data-menu="laporan"><span class="material-icons">insert_chart</span>Laporan</li>
-        <li data-menu="struktur-tim"><span class="material-icons">group</span>Struktur Tim</li>
-      </ul>
-    </nav>
+  <main class="content">
+    <form id="form-pendaftaran">
+      <input type="text" id="nama" placeholder="Nama Pasien" required />
+      <input type="date" id="dob" required />
+      <select id="gender" required>
+        <option value="">Jenis Kelamin</option>
+        <option value="Laki-laki">Laki-laki</option>
+        <option value="Perempuan">Perempuan</option>
+      </select>
+      <select id="kunjungan" required>
+        <option value="">Jenis Kunjungan</option>
+        <option value="Rawat Jalan">Rawat Jalan</option>
+        <option value="Rawat Inap">Rawat Inap</option>
+        <option value="Dirujuk">Dirujuk</option>
+      </select>
+      <button type="submit">Simpan ke Firebase</button>
+    </form>
+    <div id="result"></div>
+  </main>
 
-    <main class="content" role="main" tabindex="-1" aria-live="polite" aria-atomic="true">
-      <!-- Konten dinamis akan di-render oleh script.js -->
-    </main>
-  </div>
-
-  <!-- Hubungkan file JavaScript eksternal -->
   <script src="script.js"></script>
 </body>
 </html>
