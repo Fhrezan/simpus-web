@@ -1,6 +1,4 @@
-// SIMPUS - script.js versi eksplisit render langsung + Firebase
-
-// Firebase v8 (CDN style)
+// Firebase v8
 const firebaseConfig = {
   apiKey: "AIzaSyC3CzIeL1P2fLMaVRF8fXxH4lTWqXAHVJ8",
   authDomain: "mkpfiks.firebaseapp.com",
@@ -14,24 +12,15 @@ const db = firebase.firestore();
 
 console.log("✅ Firebase terhubung:", db);
 
-// Saat halaman selesai dimuat
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("📄 DOM ready");
-
+// Fungsi render menu
+function renderPendaftaran() {
   const mainContent = document.querySelector("main.content");
-  if (!mainContent) {
-    console.error("❌ Elemen <main> tidak ditemukan!");
-    return;
-  }
-
-  // Render form langsung
-  console.log("🧩 Menyisipkan form pendaftaran...");
   mainContent.innerHTML = `
     <h2>Pendaftaran Pasien Baru / Kunjungan</h2>
     <form id="form-pendaftaran" novalidate>
       <div class="form-group">
         <label for="patient-name">Nama Pasien</label>
-        <input type="text" id="patient-name" required placeholder="Masukkan nama lengkap pasien" />
+        <input type="text" id="patient-name" required />
       </div>
       <div class="form-group">
         <label for="patient-dob">Tanggal Lahir</label>
@@ -56,46 +45,107 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <button type="submit" class="btn">Daftarkan Pasien</button>
     </form>
-    <div id="pendaftaran-feedback" aria-live="polite"></div>
+    <div id="pendaftaran-feedback"></div>
   `;
+}
 
-  // Tangani submit
-  document.getElementById("form-pendaftaran").addEventListener("submit", function (e) {
-    e.preventDefault();
+function renderDataPasien() {
+  const mainContent = document.querySelector("main.content");
+  mainContent.innerHTML = `<h2>Data Pasien</h2><p>(Fitur menampilkan data akan ditambahkan)</p>`;
+}
 
-    const name = document.getElementById("patient-name").value.trim();
-    const dob = document.getElementById("patient-dob").value;
-    const gender = document.getElementById("patient-gender").value;
-    const visitType = document.getElementById("visit-type").value;
-    const feedback = document.getElementById("pendaftaran-feedback");
+function renderRekamMedis() {
+  const mainContent = document.querySelector("main.content");
+  mainContent.innerHTML = `<h2>Rekam Medis</h2><p>Form rekam medis di sini</p>`;
+}
 
-    if (!name || !dob || !gender || !visitType) {
-      feedback.textContent = "⚠️ Mohon lengkapi semua kolom!";
-      feedback.style.color = "#e67e22";
-      console.warn("⚠️ Form tidak lengkap.");
-      return;
+function renderLaporan() {
+  const mainContent = document.querySelector("main.content");
+  mainContent.innerHTML = `<h2>Laporan</h2><p>Ringkasan kunjungan pasien</p>`;
+}
+
+function renderStrukturTim() {
+  const mainContent = document.querySelector("main.content");
+  mainContent.innerHTML = `<h2>Struktur Tim</h2><p>Anggota tim SIMPUS dan perannya</p>`;
+}
+
+// Kontrol menu
+function renderMainContent(menu) {
+  switch (menu) {
+    case "pendaftaran":
+      renderPendaftaran();
+      break;
+    case "pasien":
+      renderDataPasien();
+      break;
+    case "rekam-medis":
+      renderRekamMedis();
+      break;
+    case "laporan":
+      renderLaporan();
+      break;
+    case "struktur-tim":
+      renderStrukturTim();
+      break;
+    default:
+      renderPendaftaran();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("📄 DOM Loaded");
+
+  let currentMenu = "pendaftaran";
+  renderMainContent(currentMenu);
+
+  // Tangani klik menu
+  document.querySelectorAll("[data-menu]").forEach(item => {
+    item.addEventListener("click", () => {
+      const selected = item.getAttribute("data-menu");
+      currentMenu = selected;
+      console.log("🔁 Navigasi ke:", selected);
+      renderMainContent(currentMenu);
+    });
+  });
+
+  // Tangani form pendaftaran
+  document.body.addEventListener("submit", function (e) {
+    if (e.target && e.target.id === "form-pendaftaran") {
+      e.preventDefault();
+
+      const name = document.getElementById("patient-name").value.trim();
+      const dob = document.getElementById("patient-dob").value;
+      const gender = document.getElementById("patient-gender").value;
+      const visitType = document.getElementById("visit-type").value;
+      const feedback = document.getElementById("pendaftaran-feedback");
+
+      if (!name || !dob || !gender || !visitType) {
+        feedback.textContent = "⚠️ Mohon lengkapi semua kolom!";
+        feedback.style.color = "orange";
+        return;
+      }
+
+      const data = {
+        name: name,
+        dob: dob,
+        gender: gender,
+        visitType: visitType,
+        lastVisit: new Date().toISOString().split("T")[0]
+      };
+
+      console.log("📦 Menyimpan:", data);
+
+      db.collection("patients").add(data)
+        .then(() => {
+          console.log("✅ Disimpan di Firebase");
+          feedback.textContent = "✅ Pasien berhasil disimpan.";
+          feedback.style.color = "green";
+        })
+        .catch((err) => {
+          console.error("❌ Error:", err);
+          feedback.textContent = "❌ Gagal simpan: " + err.message;
+          feedback.style.color = "red";
+        });
     }
-
-    const data = {
-      name: name,
-      dob: dob,
-      gender: gender,
-      visitType: visitType,
-      lastVisit: new Date().toISOString().split("T")[0]
-    };
-
-    console.log("📦 Menyimpan ke Firebase:", data);
-
-    db.collection("patients").add(data)
-      .then(() => {
-        console.log("✅ Berhasil simpan ke Firestore!");
-        feedback.textContent = "✅ Pasien berhasil didaftarkan dan disimpan ke Firebase.";
-        feedback.style.color = "green";
-      })
-      .catch((error) => {
-        console.error("❌ Gagal simpan:", error);
-        feedback.textContent = "❌ Gagal menyimpan ke Firebase: " + error.message;
-        feedback.style.color = "red";
-      });
   });
 });
